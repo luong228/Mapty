@@ -280,27 +280,22 @@ class App {
 
     this.#workouts = data;
 
+    const workoutTypes = {
+        running: Running,
+        cycling: Cycling
+    }
+
     this.#workouts.forEach(workout => {
-      const { id, coords, distance, duration } = workout;
-      if (workout.type === 'running') {
-        const { cadence } = workout;
-        const running = new Running(coords, distance, duration, cadence, id);
-
-        this._renderWorkout(running);
-      }
-
-      if (workout.type === 'cycling') {
-        const { elevationGain } = workout;
-        const cycling = new Cycling(
-          coords,
-          distance,
-          duration,
-          elevationGain,
-          id
-        );
-        this._renderWorkout(cycling);
-      }
-    });
+      const { id, coords, distance, duration, type} = workout;
+    
+      const workoutClass = workoutTypes[type];
+      
+      if(!workoutClass) return;
+      
+      const {cadence, elevationGain} = workout;
+        const workoutInstance = new workoutClass(coords, distance, duration, cadence || elevationGain, id);
+        this._renderWorkout(workoutInstance);
+      })
   }
 
   _setLocalStorage() {
